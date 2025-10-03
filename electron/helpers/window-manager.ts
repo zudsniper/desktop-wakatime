@@ -57,7 +57,8 @@ class XWinWindowManager implements WindowManager {
   }
 
   subscribeActiveWindow(callback: (window: DesktopWindow) => void): number {
-    const id = getXWin().subscribeActiveWindow((windowInfo) => {
+    const id = getXWin().subscribeActiveWindow((err: unknown, windowInfo: any) => {
+      if (err || !windowInfo) return;
       callback(convertXWinWindow(windowInfo));
     });
     return id;
@@ -215,8 +216,7 @@ class LinuxWindowManager implements WindowManager {
       const appName =
         wmClassRaw?.[wmClassRaw.length - 1] ??
         gtkAppId ??
-        processPath ? path.parse(processPath).name : title;
-
+        (processPath ? path.parse(processPath).name : title);
       return {
         id: windowId,
         title,
