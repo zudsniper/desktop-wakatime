@@ -21,6 +21,9 @@ export const allApps: MonitoredAppInfo[] = [
       exePath: "brave.exe",
       DisplayName: "Brave",
     },
+    linux: {
+      execName: "brave-browser",
+    },
     isBrowser: true,
   },
   {
@@ -43,6 +46,9 @@ export const allApps: MonitoredAppInfo[] = [
       exePath: "chrome.exe",
       DisplayName: "Google Chrome",
     },
+    linux: {
+      execName: "google-chrome",
+    },
     isBrowser: true,
   },
   {
@@ -53,6 +59,9 @@ export const allApps: MonitoredAppInfo[] = [
     windows: {
       exePath: "Figma.exe",
       DisplayName: "Figma",
+    },
+    linux: {
+      execName: "figma-linux",
     },
     isElectronApp: true,
     isDefaultEnabled: true,
@@ -65,6 +74,9 @@ export const allApps: MonitoredAppInfo[] = [
     windows: {
       exePath: "firefox.exe",
       DisplayName: "Mozilla Firefox",
+    },
+    linux: {
+      execName: "firefox",
     },
     isBrowser: true,
   },
@@ -95,6 +107,9 @@ export const allApps: MonitoredAppInfo[] = [
     windows: {
       exePath: "Linear.exe",
       DisplayName: "Linear",
+    },
+    linux: {
+      execName: "linear",
     },
     isDefaultEnabled: true,
   },
@@ -162,6 +177,9 @@ export const allApps: MonitoredAppInfo[] = [
       exePath: "Notion.exe",
       DisplayName: "Notion",
     },
+    linux: {
+      execName: "notion-app",
+    },
     isDefaultEnabled: true,
   },
   {
@@ -172,6 +190,9 @@ export const allApps: MonitoredAppInfo[] = [
     windows: {
       exePath: "Postman.exe",
       DisplayName: "Postman",
+    },
+    linux: {
+      execName: "postman",
     },
     isDefaultEnabled: true,
   },
@@ -198,6 +219,9 @@ export const allApps: MonitoredAppInfo[] = [
     mac: {
       bundleId: "com.microsoft.edgemac",
     },
+    linux: {
+      execName: "microsoft-edge",
+    },
     isBrowser: true,
   },
   {
@@ -208,6 +232,9 @@ export const allApps: MonitoredAppInfo[] = [
     windows: {
       exePath: "slack.exe",
       DisplayName: "Slack",
+    },
+    linux: {
+      execName: "slack",
     },
     isElectronApp: true,
   },
@@ -271,6 +298,9 @@ export const allApps: MonitoredAppInfo[] = [
     windows: {
       exePath: "Zoom.exe",
       DisplayName: "Zoom",
+    },
+    linux: {
+      execName: "zoom",
     },
     isDefaultEnabled: true,
   },

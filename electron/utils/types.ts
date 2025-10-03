@@ -61,6 +61,10 @@ export type MonitoredAppInfo = {
     exePath?: string;
     DisplayName?: string;
   };
+  linux?: {
+    execName?: string;
+    desktopId?: string;
+  };
   isBrowser?: boolean;
   isDefaultEnabled?: boolean;
   isElectronApp?: boolean;

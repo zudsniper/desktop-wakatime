@@ -1,5 +1,4 @@
 import path from "path";
-import { WindowInfo } from "@miniben90/x-win";
 import { app, nativeImage, Notification, shell, Tray } from "electron";
 import isDev from "electron-is-dev";
 import { autoUpdater } from "electron-updater";
@@ -7,6 +6,7 @@ import { autoUpdater } from "electron-updater";
 import type { Category, EntityType } from "../utils/types";
 import type { AppData } from "../utils/validators";
 import { AppsManager } from "../helpers/apps-manager";
+import { DesktopWindow } from "../helpers/window-manager";
 import { ConfigFile } from "../helpers/config-file";
 import { Dependencies } from "../helpers/dependencies";
 import { MonitoringManager } from "../helpers/monitoring-manager";
@@ -128,7 +128,7 @@ export class Wakatime {
 
   async sendHeartbeat(props: {
     appData?: AppData;
-    windowInfo: WindowInfo;
+    windowInfo: DesktopWindow;
     entity: string;
     entityType: EntityType;
     category: Category | null;
@@ -151,7 +151,8 @@ export class Wakatime {
     if (!this.shouldSendHeartbeat(entity, time, isWrite, category)) {
       return;
     }
-    if (!MonitoringManager.isMonitored(windowInfo.info.path)) {
+    const windowPath = windowInfo.info.path;
+    if (!windowPath || !MonitoringManager.isMonitored(windowPath)) {
       return;
     }
 
@@ -377,7 +378,7 @@ export class Wakatime {
     await autoUpdater.checkForUpdatesAndNotify();
   }
 
-  pluginString(appData?: AppData, windowInfo?: WindowInfo) {
+  pluginString(appData?: AppData, windowInfo?: DesktopWindow) {
     const appName = windowInfo?.info.name || appData?.name;
     if (!appName) {
       return this.versionString;

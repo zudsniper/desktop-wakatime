@@ -1,9 +1,8 @@
-import { WindowInfo } from "@miniben90/x-win";
-
 import { Category } from "../utils/types";
 import { AppData } from "../utils/validators";
 import { FilterManager } from "./filter-manager";
 import { PropertiesManager } from "./properties-manager";
+import { DesktopWindow } from "./window-manager";
 
 export interface HeartbeatData {
   entity: string;
@@ -14,7 +13,7 @@ export interface HeartbeatData {
 
 export class MonitoredApp {
   static heartbeatData(
-    windowInfo: WindowInfo,
+    windowInfo: DesktopWindow,
     app?: AppData,
   ): HeartbeatData | null {
     const entity = this.entity(windowInfo, app);
@@ -98,7 +97,7 @@ export class MonitoredApp {
     }
   }
 
-  static project({ url }: WindowInfo) {
+  static project({ url }: DesktopWindow) {
     if (!url) {
       return null;
     }
@@ -134,7 +133,7 @@ export class MonitoredApp {
     return null;
   }
 
-  static entity(windowInfo: WindowInfo, app?: AppData) {
+  static entity(windowInfo: DesktopWindow, app?: AppData) {
     if (app?.isBrowser) {
       if (windowInfo.url && FilterManager.filterBrowsedSites(windowInfo.url)) {
         if (PropertiesManager.domainPreference === "domain") {
@@ -157,7 +156,7 @@ export class MonitoredApp {
     }
   }
 
-  static title(windowInfo: WindowInfo, app?: AppData) {
+  static title(windowInfo: DesktopWindow, app?: AppData) {
     switch (app?.id) {
       case "arcbrowser":
       case "brave":

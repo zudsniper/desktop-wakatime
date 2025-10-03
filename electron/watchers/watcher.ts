@@ -1,21 +1,19 @@
 import type { IGlobalKeyListener } from "node-global-key-listener";
-import {
-  activeWindow,
-  subscribeActiveWindow,
-  unsubscribeActiveWindow,
-  WindowInfo,
-} from "@miniben90/x-win";
 import { GlobalKeyboardListener } from "node-global-key-listener";
 
 import { AppsManager } from "../helpers/apps-manager";
 import { MonitoredApp } from "../helpers/monitored-app";
 import { MonitoringManager } from "../helpers/monitoring-manager";
+import {
+  DesktopWindow,
+  windowManager,
+} from "../helpers/window-manager";
 import { Logging, LogLevel } from "../utils/logging";
 import { Wakatime } from "./wakatime";
 
 export class Watcher {
   wakatime: Wakatime;
-  activeWindow?: WindowInfo;
+  activeWindow?: DesktopWindow;
   private activeWindowSubscription: number | null;
   private gkl: GlobalKeyboardListener;
   private isWatchingForKeyboardEvents = false;
@@ -33,7 +31,10 @@ export class Watcher {
 
     try {
       // To ensure we always retrieve the most current window information, including the updated URL and title, we use the activeWindow function instead of relying on the previously stored this.activeApp. This approach addresses the issue where switching tabs in your browser does not trigger a window change event, leading to activeApp retaining outdated URL and title information.
-      const window = activeWindow();
+      const window = windowManager.activeWindow();
+      if (!window?.info.path) {
+        return;
+      }
       const app = AppsManager.instance().getApp(window.info.path);
       const heartbeatData = MonitoredApp.heartbeatData(window, app);
       if (!heartbeatData) {
@@ -65,9 +66,10 @@ export class Watcher {
     this.gkl.removeListener(this.globalKeyListener);
   }
 
-  start() {
-    this.activeWindowSubscription = subscribeActiveWindow(
-      (windowInfo: WindowInfo) => {
+  async start() {
+    await windowManager.init();
+    this.activeWindowSubscription = windowManager.subscribeActiveWindow(
+      (windowInfo: DesktopWindow) => {
         if (!windowInfo.info.processId) return;
         if (this.activeWindow?.info.processId === windowInfo.info.processId) {
           return;
@@ -100,11 +102,19 @@ export class Watcher {
         }
       },
     );
+
+    if (this.activeWindowSubscription === -1) {
+      Logging.instance().log(
+        "Active window monitoring is unavailable on this platform.",
+        LogLevel.WARN,
+        true,
+      );
+    }
   }
 
   stop() {
     if (this.activeWindowSubscription !== null) {
-      unsubscribeActiveWindow(this.activeWindowSubscription);
+      windowManager.unsubscribeActiveWindow(this.activeWindowSubscription);
     }
   }
 }
