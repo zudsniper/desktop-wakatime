@@ -1,3 +1,9 @@
+> Shoutout to https://github.com/wakatime/desktop-wakatime/issues/44 , the guys in these issue comments did a lot of this work for me, I just made a PR.
+> and then made it build, to be fair. <sup>(it currently does not build)</sup>  
+
+
+---
+
 # desktop-wakatime
 
 Desktop system tray app for automatic time tracking and metrics generated from your app usage activity.
