@@ -1,5 +1,4 @@
 import path from "node:path";
-import { openWindowsAsync, WindowInfo } from "@miniben90/x-win";
 import {
   app,
   BrowserWindow,
@@ -16,6 +15,10 @@ import { ConfigFile } from "./helpers/config-file";
 import { MonitoringManager } from "./helpers/monitoring-manager";
 import { PropertiesManager } from "./helpers/properties-manager";
 import { SettingsManager } from "./helpers/settings-manager";
+import {
+  DesktopWindow,
+  windowManager,
+} from "./helpers/window-manager";
 import { getLogFilePath } from "./utils";
 import { DeepLink, IpcKeys, WAKATIME_PROTOCALL } from "./utils/constants";
 import { Logging, LogLevel } from "./utils/logging";
@@ -249,7 +252,7 @@ if (!gotTheLock) {
     wakatime = new Wakatime();
     wakatime.init(tray);
     watcher = new Watcher(wakatime);
-    watcher.start();
+    await watcher.start();
   });
 
   app.on("open-url", (_event, url) => {
@@ -266,9 +269,10 @@ app.on("quit", () => {
   watcher?.stop();
 });
 
-async function windowsToApps(windows: WindowInfo[]) {
+async function windowsToApps(windows: DesktopWindow[]) {
   return Promise.all(
     windows
+      .filter((win) => win.info.path)
       .filter(
         (win, i) =>
           win.info.execName &&
@@ -276,11 +280,11 @@ async function windowsToApps(windows: WindowInfo[]) {
       )
       .sort((a, b) => a.info.name.localeCompare(b.info.name))
       .map(async (window) => {
-        const icon = (await window.getIconAsync()).data;
+        const icon = await window.getIcon();
         return {
-          id: window.info.path,
+          id: window.info.path!,
           name: window.info.name,
-          path: window.info.path,
+          path: window.info.path!,
           icon,
           isBrowser: false,
           isDefaultEnabled: false,
@@ -319,14 +323,16 @@ ipcMain.on(IpcKeys.getAllApps, (event) => {
 });
 
 ipcMain.on(IpcKeys.getOpenApps, async (event) => {
-  const windows = await openWindowsAsync();
+  await windowManager.init();
+  const windows = await windowManager.getOpenWindows();
   const apps = await windowsToApps(windows);
   event.returnValue = apps.filter((app) => !AppsManager.isExcludedApp(app));
 });
 
 ipcMain.on(IpcKeys.getAllAvailableApps, async (event) => {
+  await windowManager.init();
   const apps = AppsManager.instance().getAllApps();
-  const windows = await openWindowsAsync();
+  const windows = await windowManager.getOpenWindows();
   const openApps = await windowsToApps(windows);
   const uniqueOpenApps = openApps
     .filter((app) => !AppsManager.instance().getApp(app.path))
